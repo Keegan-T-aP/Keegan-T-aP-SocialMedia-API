@@ -3,7 +3,7 @@ package Service;
 import Model.Account;
 import DAO.AccountDAO;
 
-import java.util.*;
+//import java.util.*;
 import io.javalin.Javalin;
 
 public class AccountService {
@@ -17,43 +17,35 @@ public class AccountService {
         accountDAO = dao;
     }
 
-    public Javalin makeNewAccount(Account user) {
-        //create javalin to return
-        //set default value to 200, assuming all account info is correct
-        Javalin app = Javalin.create(); 
-        app.get("/register", ctx ->{ 
-            ctx.status(200);
-        });
+    public Account getAccountById(int id) {
+        return accountDAO.getAccountByID(id);
+    }
 
-        //test to make sure requirements are met
+    public Account addAccount(Account user) {
+                //test to make sure requirements are met
         if (user.getUsername() == "" || user.getPassword().length() < 4) {
-            app.get("/register", ctx ->{ 
-                ctx.status(400);
-            });
+            return null;
         }
 
         if(accountDAO.getAccountByUsername(user.getUsername()) != null) {
-            app.get("/register", ctx ->{ 
-                ctx.status(400);
-            });
+            return null;
         }
 
         // make the new user
-        accountDAO.insertUser(user);
-        return app;
+        return accountDAO.insertUser(user);
     }
 
     public Account accountLogin(Account user) {
         if (accountDAO.getAccountByUsername(user.getUsername()) == null) {
-            //return status 401
+            return null;
         }
 
         Account acc = accountDAO.getAccountByUsername(user.getUsername());
 
         if (!acc.getPassword().equals(user.getPassword())) {
-            //return status 401
+            return null;
         }
 
-        return acc;
+        return accountDAO.getAccountByUsername(user.getUsername());
     }
 }
